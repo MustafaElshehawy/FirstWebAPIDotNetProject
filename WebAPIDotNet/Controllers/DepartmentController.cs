@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebAPIDotNet.DTO;
 using WebAPIDotNet.Model;
 
 namespace WebAPIDotNet.Controllers
@@ -13,6 +15,27 @@ namespace WebAPIDotNet.Controllers
         public DepartmentController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        [HttpGet("Count")]
+        public IActionResult GetDeptDetails()
+        {
+            var departments = _context.Departments.Include(p=>p.Prods).ToList();
+
+
+            var deptDtoList = new List<DeptWithProdCountDTO>();
+
+            foreach (var item in departments)
+            {
+                DeptWithProdCountDTO deptDto = new DeptWithProdCountDTO();
+                deptDto.Name = item.Name;
+                deptDto.Id = item.ID;
+                deptDto.ProdCount = item.Prods.Count();
+
+                deptDtoList.Add(deptDto);
+            }
+            return Ok(deptDtoList);
+
         }
 
         [HttpGet]

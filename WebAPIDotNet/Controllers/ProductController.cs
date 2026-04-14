@@ -52,7 +52,7 @@ namespace WebAPIDotNet.Controllers
                 productInDb.Price = product.Price;
                 productInDb.Description = product.Description;
                 productInDb.quentity = product.quentity;
-                productInDb.CategoryId = product.CategoryId;
+                productInDb.DepartmentId = product.DepartmentId;
                 _context.SaveChanges();
                 return NoContent();
 

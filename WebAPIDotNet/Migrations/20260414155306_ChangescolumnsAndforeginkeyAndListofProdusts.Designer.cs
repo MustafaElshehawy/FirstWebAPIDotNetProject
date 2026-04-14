@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAPIDotNet.Model;
 
@@ -10,9 +11,11 @@ using WebAPIDotNet.Model;
 namespace WebAPIDotNet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414155306_ChangescolumnsAndforeginkeyAndListofProdusts")]
+    partial class ChangescolumnsAndforeginkeyAndListofProdusts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace WebAPIDotNet.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DepartmentId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -68,7 +71,7 @@ namespace WebAPIDotNet.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId");
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
                 });
@@ -77,7 +80,7 @@ namespace WebAPIDotNet.Migrations
                 {
                     b.HasOne("WebAPIDotNet.Model.Department", "Department")
                         .WithMany("Prods")
-                        .HasForeignKey("DepartmentId")
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

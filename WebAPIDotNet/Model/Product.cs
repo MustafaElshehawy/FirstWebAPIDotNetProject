@@ -1,4 +1,6 @@
-﻿namespace WebAPIDotNet.Model
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace WebAPIDotNet.Model
 {
     public class Product
     {
@@ -12,7 +14,10 @@
 
         public int quentity { get; set; }
 
-        public int CategoryId { get; set; }
+        [ForeignKey("Department")]
+        public int DepartmentId { get; set; }
+        
+        public Department? Department { get; set; }
 
 
     }
