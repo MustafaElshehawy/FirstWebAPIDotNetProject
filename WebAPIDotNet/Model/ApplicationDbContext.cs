@@ -11,6 +11,7 @@ namespace WebAPIDotNet.Model
         }
 
         public DbSet<Department> Departments { get; set; }
+        public DbSet<Product> Products { get; set; }
 
 
     }
