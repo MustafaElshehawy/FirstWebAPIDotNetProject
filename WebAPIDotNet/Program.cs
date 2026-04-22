@@ -1,6 +1,9 @@
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using WebAPIDotNet.Model;
 
 namespace WebAPIDotNet
@@ -15,6 +18,31 @@ namespace WebAPIDotNet
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            builder.Services.AddAuthentication(options => {
+                //Check JWT Token Header
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                //[authrize]
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;//authrize 401 error
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            
+            }).AddJwtBearer(options =>//verified key
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["JWT:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["JWT:Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
+                };
+            
+            
+            });
+
 
 
             builder.Services.AddControllers();
