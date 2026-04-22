@@ -1,8 +1,9 @@
-
+﻿
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using WebAPIDotNet.Model;
 
@@ -20,7 +21,7 @@ namespace WebAPIDotNet
                 .AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(options => {
-                //Check JWT Token Header
+                //Check JWT Token Header (اللي بيدور علي كلمة Bearer)
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 //[authrize]
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;//authrize 401 error
@@ -47,9 +48,46 @@ namespace WebAPIDotNet
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+            //builder.Services.AddOpenApi();
 
-            builder.Services.AddSwaggerGen();
+            //builder.Services.AddSwaggerGen();
+            //added anthor with token
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(swagger =>
+            {
+                //This is to generate the Default UI of Swagger Documentation
+                swagger.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version="v1",
+                    Title="ASP .Net 9 Web API",
+                    Description="first api project"
+                });
+                //ToEnable authorization using Swagger (JWT)
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name="Authorization",
+                    Type=SecuritySchemeType.Http,
+                    Scheme="bearer",
+                    BearerFormat="JWT",
+                    In=ParameterLocation.Header,
+                    Description="Enter 'Bearer' [space] and then your valid token in the text filed"
+                });
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference=new OpenApiReference
+                            {
+                            Type=ReferenceType.SecurityScheme,
+                            Id="Bearer"
+                            }
+                        },
+                        new string[]{ }
+                    }
+                });
+            });
+
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -59,15 +97,18 @@ namespace WebAPIDotNet
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.MapOpenApi();
+                //app.MapOpenApi();
+
+                app.UseSwagger();
                 app.UseSwaggerUI(options =>
                 {
-                    options.SwaggerEndpoint("/openapi/v1.json", "v1");
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 });
+
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
